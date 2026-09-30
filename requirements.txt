@@ -1,0 +1,40 @@
+fastapi>=0.110.0
+uvicorn[standard]>=0.28.0
+sqlalchemy>=2.0.28
+psycopg[binary]>=3.1.18
+alembic>=1.13.1
+python-dotenv>=1.0.1
+pydantic>=2.9.0
+pydantic-settings>=2.2.1
+
+# --- ETL / Data Ingestion ---
+yfinance>=0.2.37
+pandas>=2.2.0
+feedparser>=6.0.11
+trafilatura>=1.12.0
+newspaper3k>=0.2.8          # Fallback article extractor
+lxml>=5.2.0                 # Required by trafilatura and newspaper3k
+requests>=2.31.0
+
+# --- Phase 2: Event Intelligence (100% Local / Offline) ---
+# Qwen2.5-1.5B-Instruct: structured event extraction (no API key required)
+# FinBERT: continuous sentiment scoring
+transformers>=4.45.0        # HuggingFace Transformers (Qwen2.5 + FinBERT)
+torch>=2.2.0                # PyTorch inference backend
+accelerate>=0.27.0          # Required for device_map="auto" in model loading
+sentencepiece>=0.2.0        # Tokenizer dependency for some HF models
+
+# --- Phase 3: Financial ML Pipeline ---
+scikit-learn>=1.5.0         # ML pipelines, preprocessing, RandomForest, metrics
+xgboost>=2.0.0              # Gradient boosting classifier
+joblib>=1.4.0               # Model serialization (artifact export)
+matplotlib>=3.8.0           # Plotting for notebooks and reports
+seaborn>=0.13.0             # Statistical visualisation
+jupyter>=1.0.0              # Notebook server
+ipykernel>=6.29.0           # Jupyter kernel for virtual env
+notebook>=7.0.0             # Notebook UI
+
+# --- Phase 4: Historical Evidence Engine (Vector Search) ---
+faiss-cpu>=1.7.4            # CPU-only FAISS for inner-product vector search
+sentence-transformers>=2.6.0 # all-MiniLM-L6-v2 embedding model
+pyarrow>=14.0.0             # Parquet persistence for FAISS metadata

@@ -1,0 +1,78 @@
+# =====================================================================
+# MarketLens .gitignore
+# =====================================================================
+
+# 1. Environment Variables & Secrets
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+*.cert
+*.pfx
+secrets/
+
+# 2. Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# 3. Python Bytecode & Caches
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.cache/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# 4. Models, Checkpoints & Large Model Artifacts
+models/
+*.bin
+*.safetensors
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.gguf
+*.ggml
+*.joblib
+
+# 5. Datasets, Vector Stores & FAISS Index Files
+data/
+*.parquet
+*.feather
+*.h5
+*.hdf5
+*.faiss
+*.index
+
+# 6. Jupyter Notebook Checkpoints
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/*
+
+# 7. IDE & Editor Artifacts
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# 8. Build, Distribution & Packaging
+build/
+dist/
+*.egg-info/
+*.egg
+downloads/
+
+# 9. Logs & Diagnostics
+*.log
+logs/
+.system_generated/
