@@ -1,5 +1,5 @@
 """
-backend/agent/prompt_templates.py — MarketLens Phase 5
+backend/intelligence/prompt_templates.py — MarketLens Phase 5
 ======================================================
 Strict system prompts, guardrails, and templates for institutional equity research synthesis.
 

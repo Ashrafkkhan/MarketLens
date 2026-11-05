@@ -68,8 +68,8 @@ MarketLens/
 │   ├── env.py
 │   └── versions/
 ├── backend/
-│   ├── agent/                    # Phase 5: Orchestration & Synthesis
-│   │   ├── orchestrator.py
+│   ├── intelligence/             # Phase 5: Orchestration & Synthesis
+│   │   ├── finalpipeline.py
 │   │   ├── prompt_templates.py
 │   │   └── synthesizer.py
 │   ├── api/                      # Phase 5: FastAPI REST API

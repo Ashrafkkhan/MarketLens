@@ -1,5 +1,5 @@
 """
-backend/agent/orchestrator.py — MarketLens Phase 5
+backend/intelligence/finalpipeline.py — MarketLens Phase 5
 ===================================================
 Central agent controller executing the end-to-end quantitative pipeline:
   1. Extraction (Phase 2): Event classification & FinBERT sentiment via local NLP.
@@ -33,7 +33,7 @@ from database.connection import SessionLocal
 from database.models import Company, MarketData, MarketIndex
 from backend.services.event_extractor import EventExtractorService
 from backend.memory.evidence_engine import EvidenceEngine, get_evidence_engine
-from backend.agent.synthesizer import ReportSynthesizer, get_synthesizer
+from backend.intelligence.synthesizer import ReportSynthesizer, get_synthesizer
 
 logger = logging.getLogger(__name__)
 
@@ -334,13 +334,13 @@ class MarketLensAgent:
             {
                 "rank": a.rank,
                 "event_id": a.event_id,
-                "ticker": a.ticker,
-                "event_type": a.event_type,
-                "surprise": a.surprise,
-                "event_date": a.event_date,
-                "ar_3": a.ar_3,
-                "similarity_score": a.similarity_score,
-                "summary": a.summary,
+                "ticker": str(a.ticker) if (pd.notna(a.ticker) and a.ticker) else None,
+                "event_type": str(a.event_type) if (pd.notna(a.event_type) and a.event_type) else "OTHER",
+                "surprise": str(a.surprise) if (pd.notna(a.surprise) and a.surprise) else "IN_LINE",
+                "event_date": str(a.event_date) if pd.notna(a.event_date) else "",
+                "ar_3": float(a.ar_3) if pd.notna(a.ar_3) else None,
+                "similarity_score": float(a.similarity_score) if pd.notna(a.similarity_score) else 0.0,
+                "summary": str(a.summary) if pd.notna(a.summary) else "",
             }
             for a in evidence_report.top_analogs
         ]

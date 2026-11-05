@@ -1,5 +1,5 @@
 """
-backend/agent/synthesizer.py — MarketLens Phase 5
+backend/intelligence/synthesizer.py — MarketLens Phase 5
 =================================================
 Multi-tier LLM report synthesis service.
 
@@ -22,7 +22,7 @@ from typing import Any, Dict, Optional, Tuple
 
 import requests
 
-from backend.agent.prompt_templates import (
+from backend.intelligence.prompt_templates import (
     SYNTHESIS_SYSTEM_PROMPT,
     format_synthesis_prompt,
 )
@@ -51,10 +51,9 @@ class ReportSynthesizer:
         self.ollama_url = ollama_url.rstrip("/")
         self.ollama_model = ollama_model
         self.enable_gemini = enable_gemini
-        # By default, keep HF local synthesis opt-in via env var because CPU text generation
-        # of long memos without GPU/Ollama takes several minutes.
         if enable_hf_local is None:
-            self.enable_hf_local = os.getenv("ENABLE_LOCAL_HF_SYNTHESIS", "false").lower() in ("true", "1", "yes")
+            local_qwen = Path(__file__).resolve().parent.parent.parent / "models" / "Qwen2.5-1.5B-Instruct"
+            self.enable_hf_local = local_qwen.is_dir() or os.getenv("ENABLE_LOCAL_HF_SYNTHESIS", "false").lower() in ("true", "1", "yes")
         else:
             self.enable_hf_local = enable_hf_local
 
@@ -93,7 +92,7 @@ class ReportSynthesizer:
     # 2. Google Gemini Provider
     # ------------------------------------------------------------------
     def _call_gemini(self, prompt: str) -> Optional[str]:
-        """Try calling Google Gemini API if API key is configured."""
+        """Try calling Google Gemini Chat API if API key is configured."""
         if not self.enable_gemini:
             return None
 
@@ -102,18 +101,26 @@ class ReportSynthesizer:
             return None
 
         try:
-            import google.generativeai as genai
-            genai.configure(api_key=api_key)
-            model = genai.GenerativeModel(
-                model_name=DEFAULT_GEMINI_MODEL,
+            from google import genai
+            from google.genai import types
+
+            client = genai.Client(api_key=api_key, http_options=types.HttpOptions(timeout=10000))
+            config = types.GenerateContentConfig(
                 system_instruction=SYNTHESIS_SYSTEM_PROMPT,
+                temperature=0.2,
             )
-            res = model.generate_content(prompt)
-            if res and res.text:
-                logger.info("Synthesized memo via Google Gemini (%s)", DEFAULT_GEMINI_MODEL)
-                return res.text.strip()
+            model_name = os.getenv("GEMINI_MODEL", "gemini-3.5-flash")
+            for m in [model_name, "gemini-3.8-flash", "gemini-flash-latest"]:
+                try:
+                    chat = client.chats.create(model=m, config=config)
+                    res = chat.send_message(prompt)
+                    if res and res.text:
+                        logger.info("Synthesized memo via Google Gemini (%s)", m)
+                        return res.text.strip()
+                except Exception as me:
+                    logger.debug("Gemini synthesis with %s failed: %s", m, me)
         except Exception as e:
-            logger.debug("Gemini synthesis call failed: %s", e)
+            logger.warning("Gemini synthesis call failed: %s", e)
         return None
 
     # ------------------------------------------------------------------
@@ -279,24 +286,18 @@ class ReportSynthesizer:
         full_memo: Optional[str] = None
         source_llm = "deterministic_analyst_engine"
 
-        # Tier 1: Ollama (Qwen2.5-1.5B via Ollama)
+        # Tier 1: Ollama (Qwen2.5-1.5B via Ollama) — Local only, no Gemini in synthesis
         full_memo = self._call_ollama(user_prompt)
         if full_memo:
             source_llm = f"ollama/{self.ollama_model}"
 
-        # Tier 2: Gemini API
-        if not full_memo:
-            full_memo = self._call_gemini(user_prompt)
-            if full_memo:
-                source_llm = f"google/{DEFAULT_GEMINI_MODEL}"
-
-        # Tier 3: Local HF Qwen (if opt-in enabled)
+        # Tier 2: Local HF Qwen (if opt-in enabled) — Gemini NOT used in synthesis
         if not full_memo:
             full_memo = self._call_hf_qwen(user_prompt)
             if full_memo:
                 source_llm = "local_hf/qwen2.5-1.5b-instruct"
 
-        # Tier 4: Deterministic Rule-Based Fallback
+        # Tier 3: Deterministic Rule-Based Fallback (always available, zero latency)
         if not full_memo:
             full_memo = self._deterministic_synthesis(
                 headline=headline,

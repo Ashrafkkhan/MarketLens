@@ -25,8 +25,11 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
+from dotenv import load_dotenv
+load_dotenv(PROJECT_ROOT / ".env")
+
 from backend.api.routes import router as api_router, health_check
-from backend.agent.orchestrator import get_agent
+from backend.intelligence.finalpipeline import get_agent
 
 logging.basicConfig(
     level=logging.INFO,

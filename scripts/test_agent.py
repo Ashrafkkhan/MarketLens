@@ -34,7 +34,7 @@ logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(name)s - %(message)s",
 )
 
-from backend.agent.orchestrator import MarketLensAgent, get_agent
+from backend.intelligence.finalpipeline import MarketLensAgent, get_agent
 
 
 DEFAULT_HEADLINE = (

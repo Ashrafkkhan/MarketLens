@@ -110,8 +110,8 @@ class AnalogItem(BaseModel):
     rank: int
     event_id: int
     ticker: Optional[str] = None
-    event_type: str
-    surprise: Optional[str] = None
+    event_type: str = "OTHER"
+    surprise: Optional[str] = "IN_LINE"
     event_date: str
     ar_3: Optional[float] = None
     similarity_score: float
@@ -158,3 +158,80 @@ class HealthResponse(BaseModel):
     faiss_index: bool
     model_c: bool
     details: Dict[str, Any]
+
+
+# ---------------------------------------------------------------------------
+# Chat & Feed Schemas (Phase 6)
+# ---------------------------------------------------------------------------
+
+class ChatMessage(BaseModel):
+    role: str = Field(..., description="'user', 'assistant', or 'system'")
+    content: str = Field(..., description="Message text")
+
+
+class ChatRequest(BaseModel):
+    messages: List[ChatMessage] = Field(..., description="Conversation history")
+    context: Optional[Dict[str, Any]] = Field(default=None, description="Active event analysis context")
+
+
+class ChatResponse(BaseModel):
+    response: str
+    source_llm: str
+
+
+class EventFeedItem(BaseModel):
+    id: int
+    news_id: int
+    ticker: Optional[str] = None
+    company_name: Optional[str] = None
+    headline: str
+    body: Optional[str] = None
+    event_type: str
+    sentiment: str
+    surprise: Optional[str] = None
+    magnitude: Optional[float] = None
+    summary: str
+    published_at: Optional[str] = None
+    created_at: Optional[str] = None
+
+
+class EventFeedResponse(BaseModel):
+    events: List[EventFeedItem]
+    total: int
+
+
+# ---------------------------------------------------------------------------
+# Price Forecast Schemas (Stock Price Prediction ML)
+# ---------------------------------------------------------------------------
+
+class PriceForecastRequest(BaseModel):
+    """Payload for stock price forecast via local ML pipeline."""
+    ticker: str = Field(..., description="NSE ticker symbol without suffix (e.g. 'RELIANCE', 'TCS')")
+    horizon_days: int = Field(default=7, description="Number of future trading days to forecast", ge=1, le=30)
+    model_name: Optional[str] = Field(default=None, description="Model to use: 'Random Forest', 'XGBoost', 'LSTM'. Auto-selects if None.")
+
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "ticker": "RELIANCE",
+                "horizon_days": 7,
+                "model_name": "Random Forest",
+            }
+        }
+    }
+
+
+class PriceForecastResponse(BaseModel):
+    """Price forecast result from the local ML pipeline."""
+    ticker: str
+    model_used: Optional[str] = None
+    last_actual_date: Optional[str] = None
+    last_actual_close: Optional[float] = None
+    forecast_dates: List[str] = []
+    forecast_prices: List[float] = []
+    signal: str = "Hold"
+    confidence_pct: int = 0
+    price_change_pct: float = 0.0
+    model_metrics: Dict[str, Any] = {}
+    available_models: List[str] = []
+    error: Optional[str] = None

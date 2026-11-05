@@ -1,0 +1,213 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 1000" width="1440" height="1000" font-family="Arial, Helvetica, sans-serif">
+  <title>MarketLens system architecture</title>
+  <desc>Data sources, PostgreSQL, the FastAPI analysis pipeline, offline training, LLM providers and the Next.js frontend.</desc>
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#475569"/>
+    </marker>
+    <marker id="arrD" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#94a3b8"/>
+    </marker>
+    <style>
+      .t  { font-size: 15px; font-weight: 700; fill: #0f172a; }
+      .s  { font-size: 12px; fill: #334155; }
+      .xs { font-size: 11px; fill: #475569; }
+      .h  { font-size: 13px; font-weight: 700; letter-spacing: 1.2px; fill: #475569; }
+      .ttl{ font-size: 26px; font-weight: 700; fill: #0e7490; }
+      .box { stroke-width: 1.5; rx: 10; }
+      .ln  { stroke: #475569; stroke-width: 1.8; fill: none; marker-end: url(#arr); }
+      .lnd { stroke: #94a3b8; stroke-width: 1.5; fill: none; stroke-dasharray: 6 5; marker-end: url(#arrD); }
+      .lbl { font-size: 11px; fill: #0e7490; font-weight: 700; }
+    </style>
+  </defs>
+
+  <rect width="1440" height="1000" fill="#ffffff"/>
+  <text x="40" y="44" class="ttl">MarketLens: system architecture</text>
+  <text x="40" y="66" class="s">From a news headline to a probability, evidence, a memo and a price outlook (Indian equities, NSE/BSE)</text>
+
+  <!-- ============ LAYER 1: DATA SOURCES ============ -->
+  <text x="40" y="98" class="h">1. DATA SOURCES</text>
+  <rect x="40" y="108" width="260" height="66" class="box" fill="#f1f5f9" stroke="#64748b"/>
+  <text x="56" y="132" class="t">Financial news RSS feeds</text>
+  <text x="56" y="152" class="xs">feedparser, trafilatura, newspaper3k</text>
+
+  <rect x="330" y="108" width="270" height="66" class="box" fill="#f1f5f9" stroke="#64748b"/>
+  <text x="346" y="132" class="t">Yahoo Finance (yfinance)</text>
+  <text x="346" y="152" class="xs">Daily OHLCV for stocks and NIFTY 50 (^NSEI)</text>
+
+  <!-- ============ LAYER 2: INGESTION + DB ============ -->
+  <text x="40" y="214" class="h">2. DATA LAYER</text>
+  <rect x="40" y="224" width="330" height="92" class="box" fill="#ecfeff" stroke="#0891b2"/>
+  <text x="56" y="248" class="t">Ingestion scripts</text>
+  <text x="56" y="268" class="xs">collect_news.py  |  collect_market_data.py</text>
+  <text x="56" y="285" class="xs">collect_indices.py  |  extract_events.py (Qwen + FinBERT)</text>
+  <text x="56" y="302" class="xs">Alembic migrations manage the schema</text>
+
+  <rect x="430" y="224" width="400" height="92" class="box" fill="#ecfeff" stroke="#0891b2"/>
+  <text x="446" y="248" class="t">PostgreSQL (SQLAlchemy 2.0)</text>
+  <text x="446" y="268" class="xs">companies  |  news  |  market_data</text>
+  <text x="446" y="285" class="xs">market_indices  |  events (type, surprise, FinBERT scores)</text>
+  <text x="446" y="302" class="xs">Feeds the live event feed and the technical features</text>
+
+  <!-- ============ OFFLINE ============ -->
+  <text x="900" y="214" class="h">OFFLINE BUILD STEPS</text>
+  <rect x="900" y="224" width="260" height="92" class="box" fill="#fef9c3" stroke="#ca8a04"/>
+  <text x="916" y="248" class="t">Training and indexing</text>
+  <text x="916" y="268" class="xs">run_phase3_training.py (3-model ablation)</text>
+  <text x="916" y="285" class="xs">build_vector_index.py (MiniLM embeddings)</text>
+  <text x="916" y="302" class="xs">preanalyze_demo.py (cache the demo)</text>
+
+  <rect x="1190" y="224" width="210" height="44" class="box" fill="#fef9c3" stroke="#ca8a04"/>
+  <text x="1204" y="244" class="t">Model C artifact</text>
+  <text x="1204" y="260" class="xs">event_classifier_v1.joblib</text>
+  <rect x="1190" y="276" width="210" height="44" class="box" fill="#fef9c3" stroke="#ca8a04"/>
+  <text x="1204" y="296" class="t">FAISS vector memory</text>
+  <text x="1204" y="312" class="xs">index.bin + metadata.parquet</text>
+
+  <!-- arrows layer 1 -> 2 -->
+  <path d="M170 174 V224" class="ln"/>
+  <path d="M465 174 V200 H250 V224" class="ln"/>
+  <path d="M370 270 H430" class="ln"/>
+  <path d="M830 270 H900" class="lnd"/>
+  <path d="M1160 246 H1190" class="ln"/>
+  <path d="M1160 298 H1190" class="ln"/>
+
+  <!-- ============ LAYER 3: BACKEND ============ -->
+  <rect x="40" y="352" width="1030" height="400" rx="14" fill="#f8fafc" stroke="#0e7490" stroke-width="2"/>
+  <text x="60" y="378" class="h">3. BACKEND: FastAPI (/api/v1) with MarketLensAgent.analyze_event()</text>
+
+  <!-- pipeline row 1 -->
+  <rect x="60" y="396" width="300" height="96" class="box" fill="#e0f2fe" stroke="#0284c7"/>
+  <text x="76" y="420" class="t">1  Event extraction</text>
+  <text x="76" y="440" class="xs">Qwen2.5-1.5B-Instruct (local, PyTorch)</text>
+  <text x="76" y="457" class="xs">Returns ticker, event type, surprise, magnitude</text>
+  <text x="76" y="474" class="xs">Regex rule-based fallback if JSON fails</text>
+
+  <rect x="390" y="396" width="300" height="96" class="box" fill="#e0f2fe" stroke="#0284c7"/>
+  <text x="406" y="420" class="t">2  Sentiment</text>
+  <text x="406" y="440" class="xs">ProsusAI/FinBERT (local)</text>
+  <text x="406" y="457" class="xs">Positive / negative / neutral probabilities</text>
+
+  <rect x="720" y="396" width="330" height="96" class="box" fill="#e0f2fe" stroke="#0284c7"/>
+  <text x="736" y="420" class="t">3  Technical features</text>
+  <text x="736" y="440" class="xs">Momentum 5d/20d, volatility, volume anomaly,</text>
+  <text x="736" y="457" class="xs">NIFTY 5-day return. Computed with pandas from</text>
+  <text x="736" y="474" class="xs">the last ~35 days in PostgreSQL</text>
+
+  <path d="M360 444 H390" class="ln"/>
+  <path d="M690 444 H720" class="ln"/>
+
+  <!-- pipeline row 2 -->
+  <rect x="60" y="540" width="300" height="104" class="box" fill="#dcfce7" stroke="#16a34a"/>
+  <text x="76" y="564" class="t">4  Model C (prediction)</text>
+  <text x="76" y="584" class="xs">Random Forest, 21 features, scikit-learn</text>
+  <text x="76" y="601" class="xs">P(3-day abnormal return &gt; +0.5% vs NIFTY 50)</text>
+  <text x="76" y="618" class="xs">Signal and conviction label</text>
+
+  <rect x="390" y="540" width="300" height="104" class="box" fill="#dcfce7" stroke="#16a34a"/>
+  <text x="406" y="564" class="t">5  Historical evidence</text>
+  <text x="406" y="584" class="xs">all-MiniLM-L6-v2 + FAISS IndexFlatIP</text>
+  <text x="406" y="601" class="xs">Win rate, median AR3, max gain/loss,</text>
+  <text x="406" y="618" class="xs">top analog events</text>
+
+  <rect x="720" y="540" width="330" height="104" class="box" fill="#dcfce7" stroke="#16a34a"/>
+  <text x="736" y="564" class="t">6  Research memo</text>
+  <text x="736" y="584" class="xs">Four sections: thesis, drivers, precedent, risks</text>
+  <text x="736" y="601" class="xs">Ollama, then local Qwen, then deterministic</text>
+  <text x="736" y="618" class="xs">template (always available)</text>
+
+  <path d="M870 492 V516 H210 V540" class="ln"/>
+  <path d="M540 492 V540" class="ln"/>
+  <path d="M360 592 H390" class="ln"/>
+  <path d="M690 592 H720" class="ln"/>
+
+  <!-- row 3: extra services -->
+  <rect x="60" y="672" width="300" height="64" class="box" fill="#fae8ff" stroke="#a21caf"/>
+  <text x="76" y="696" class="t">Price forecast service</text>
+  <text x="76" y="714" class="xs">Random Forest / XGBoost / LSTM, 7-day recursive</text>
+  <text x="76" y="728" class="xs">from ml_genai (bridged), trains on demand</text>
+
+  <rect x="390" y="672" width="300" height="64" class="box" fill="#fae8ff" stroke="#a21caf"/>
+  <text x="406" y="696" class="t">Analysis cache</text>
+  <text x="406" y="714" class="xs">demo_cache/analysis_cache.json</text>
+  <text x="406" y="728" class="xs">Pre-analysed headlines load instantly</text>
+
+  <rect x="720" y="672" width="330" height="64" class="box" fill="#fae8ff" stroke="#a21caf"/>
+  <text x="736" y="696" class="t">Analyst chat endpoint (/chat)</text>
+  <text x="736" y="714" class="xs">Builds a grounded prompt from the analysis,</text>
+  <text x="736" y="728" class="xs">evidence and live price forecast</text>
+
+  <!-- DB to backend, models to backend -->
+  <path d="M630 316 V352" class="ln"/>
+  <text x="640" y="338" class="lbl">events, prices</text>
+  <path d="M1295 320 V338 H1010 V352" class="lnd"/>
+  <text x="1030" y="334" class="lbl">loaded at startup</text>
+
+  <!-- ============ LLM PROVIDERS ============ -->
+  <rect x="1100" y="352" width="300" height="400" rx="14" fill="#fff7ed" stroke="#ea580c" stroke-width="2"/>
+  <text x="1120" y="378" class="h">LLM PROVIDERS (CHAT)</text>
+  <text x="1120" y="398" class="xs">First success wins, in this order:</text>
+  <rect x="1120" y="410" width="260" height="46" class="box" fill="#ffffff" stroke="#ea580c"/>
+  <text x="1134" y="430" class="t">1  Groq</text>
+  <text x="1134" y="446" class="xs">openai/gpt-oss-20b (fast, cloud)</text>
+  <rect x="1120" y="466" width="260" height="46" class="box" fill="#ffffff" stroke="#fb923c"/>
+  <text x="1134" y="486" class="t">2  Google Gemini</text>
+  <text x="1134" y="502" class="xs">Cloud fallback</text>
+  <rect x="1120" y="522" width="260" height="46" class="box" fill="#ffffff" stroke="#fb923c"/>
+  <text x="1134" y="542" class="t">3  Ollama</text>
+  <text x="1134" y="558" class="xs">qwen2.5:1.5b on localhost</text>
+  <rect x="1120" y="578" width="260" height="46" class="box" fill="#ffffff" stroke="#fb923c"/>
+  <text x="1134" y="598" class="t">4  Local Qwen2.5-1.5B</text>
+  <text x="1134" y="614" class="xs">Hugging Face Transformers, CPU/GPU</text>
+  <rect x="1120" y="634" width="260" height="46" class="box" fill="#ffffff" stroke="#fb923c"/>
+  <text x="1134" y="654" class="t">5  Deterministic engine</text>
+  <text x="1134" y="670" class="xs">Rule-based answers, always works</text>
+  <text x="1120" y="710" class="xs">The memo uses tiers 3, 4 and 5 only</text>
+  <text x="1120" y="728" class="xs">(local, no cloud call).</text>
+
+  <path d="M1050 704 H1100" class="ln"/>
+  <path d="M1050 600 H1100" class="lnd"/>
+
+  <!-- ============ LAYER 4: FRONTEND ============ -->
+  <rect x="40" y="790" width="1360" height="190" rx="14" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2"/>
+  <text x="60" y="816" class="h">4. FRONTEND: Next.js, React, TypeScript, Tailwind CSS (talks to the API over REST/JSON)</text>
+
+  <rect x="60" y="832" width="190" height="130" class="box" fill="#ffffff" stroke="#7c3aed"/>
+  <text x="74" y="856" class="t">Sidebar</text>
+  <text x="74" y="876" class="xs">Navigation between the</text>
+  <text x="74" y="892" class="xs">eight workspace views</text>
+  <text x="74" y="916" class="xs">Header: ticker, headline,</text>
+  <text x="74" y="932" class="xs">service status dots</text>
+
+  <rect x="270" y="832" width="250" height="130" class="box" fill="#ffffff" stroke="#7c3aed"/>
+  <text x="284" y="856" class="t">Market Events feed</text>
+  <text x="284" y="876" class="xs">GET /events: latest 40 events</text>
+  <text x="284" y="892" class="xs">Search and type filters</text>
+  <text x="284" y="908" class="xs">"+ Analyze" for any headline</text>
+  <text x="284" y="932" class="xs">Default demo event loads on start</text>
+
+  <rect x="540" y="832" width="440" height="130" class="box" fill="#ffffff" stroke="#7c3aed"/>
+  <text x="554" y="856" class="t">Analysis Cockpit (POST /analyze, /price-forecast)</text>
+  <text x="554" y="878" class="xs">Stock Analysis  |  Price Forecast  |  Historical Evidence</text>
+  <text x="554" y="896" class="xs">Technical Analysis  |  Research Memo  |  ML Features</text>
+  <text x="554" y="922" class="xs">All tabs share one analysis result held in page state</text>
+  <text x="554" y="940" class="xs">(analysis also cached on the server and in localStorage)</text>
+
+  <rect x="1000" y="832" width="380" height="130" class="box" fill="#ffffff" stroke="#7c3aed"/>
+  <text x="1014" y="856" class="t">Analyst Chat (POST /chat)</text>
+  <text x="1014" y="876" class="xs">Sends conversation + active analysis</text>
+  <text x="1014" y="892" class="xs">Suggestion chips, forecast card</text>
+  <text x="1014" y="908" class="xs">Shows which model answered</text>
+  <text x="1014" y="932" class="xs">Client-side fallback if the API is down</text>
+
+  <!-- backend to frontend -->
+  <path d="M300 752 V790" class="ln"/>
+  <path d="M760 752 V790" class="ln"/>
+  <path d="M1190 752 V790" class="ln"/>
+  <text x="312" y="776" class="lbl">GET /events</text>
+  <text x="772" y="776" class="lbl">POST /analyze, /price-forecast</text>
+  <text x="1202" y="776" class="lbl">POST /chat</text>
+
+  <!-- legend -->
+  <text x="40" y="996" class="xs">Solid arrow = runtime data flow.  Dashed arrow = loaded artifact or optional path.  Colours: grey sources, cyan data layer, yellow offline, blue/green pipeline, purple extra services, orange LLMs, violet frontend.</text>
+</svg>

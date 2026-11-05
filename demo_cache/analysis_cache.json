@@ -1,0 +1,110 @@
+{
+  "f57c26de75fe0bd7367a39aaf76cedeb062fefbc": {
+    "headline": "Infosys Stock Update: Shares Slip Amid IT Sector Headwinds - LatestLY",
+    "body": "",
+    "extracted_event": {
+      "news_id": 0,
+      "ticker": "INFY",
+      "event_type": "MONETARY_POLICY",
+      "gemini_sentiment": "NEGATIVE",
+      "magnitude": null,
+      "surprise": null,
+      "summary": "Infosys shares slip amid headwinds in the information technology sector.",
+      "finbert_positive": 0.008998236618936062,
+      "finbert_negative": 0.9699134826660156,
+      "finbert_neutral": 0.021088292822241783
+    },
+    "technicals": {
+      "momentum_5d": -0.025451719448222308,
+      "momentum_20d": -0.13217993079584772,
+      "volatility_20d": 0.017080235560860885,
+      "volume_anomaly": 1.0006124022048022,
+      "market_return_5d": -0.023522225556174718
+    },
+    "prediction": {
+      "ticker": "INFY",
+      "probability": 0.11404988257929434,
+      "signal": 0,
+      "conviction": "HIGH CONVICTION BEARISH",
+      "target_horizon": "T+3 Trading Days (AR3 vs NIFTY 50)",
+      "features": {
+        "momentum_5d": -0.025451719448222308,
+        "momentum_20d": -0.13217993079584772,
+        "volatility_20d": 0.017080235560860885,
+        "volume_anomaly": 1.0006124022048022,
+        "market_return_5d": -0.023522225556174718,
+        "finbert_positive": 0.008998236618936062,
+        "finbert_negative": 0.9699134826660156,
+        "finbert_neutral": 0.021088292822241783,
+        "evt_earnings": 0.0,
+        "evt_monetary_policy": 1.0,
+        "evt_regulation": 0.0,
+        "evt_contract_order": 0.0,
+        "evt_merger_acquisition": 0.0,
+        "evt_management_change": 0.0,
+        "evt_macro_data": 0.0,
+        "evt_other": 0.0,
+        "surp_beat": 0.0,
+        "surp_miss": 0.0,
+        "surp_in_line": 0.0,
+        "surp_not_applicable": 1.0,
+        "magnitude": 0.0
+      }
+    },
+    "evidence": {
+      "candidates_fetched": 20,
+      "sample_size": 20,
+      "win_rate_ar3": 0.45,
+      "median_ar3": -0.0018836750459070026,
+      "mean_ar3": -0.0009350139484552804,
+      "std_ar3": 0.008557966948227127,
+      "max_gain": 0.0064199086418452065,
+      "max_loss": -0.025186373238031065,
+      "top_analogs": [
+        {
+          "rank": 1,
+          "event_id": 172,
+          "ticker": "INFY",
+          "event_type": "MONETARY_POLICY",
+          "surprise": "IN_LINE",
+          "event_date": "2026-09-22",
+          "ar_3": -0.025186373238031065,
+          "similarity_score": 0.8431380987167358,
+          "summary": "Infosys shares slip amid headwinds in the information technology sector."
+        },
+        {
+          "rank": 2,
+          "event_id": 151,
+          "ticker": "INFY",
+          "event_type": "MONETARY_POLICY",
+          "surprise": "IN_LINE",
+          "event_date": "2026-09-23",
+          "ar_3": -0.0019294938920475894,
+          "similarity_score": 0.8186594247817993,
+          "summary": "Infosys stock price drifts lower amid sector cues."
+        },
+        {
+          "rank": 3,
+          "event_id": 156,
+          "ticker": "INFY",
+          "event_type": "MONETARY_POLICY",
+          "surprise": "IN_LINE",
+          "event_date": "2026-09-23",
+          "ar_3": -0.0019294938920475894,
+          "similarity_score": 0.7203603982925415,
+          "summary": "Infosys shares fall 5% over 5 trading days."
+        }
+      ]
+    },
+    "synthesis": {
+      "source_llm": "local_hf/qwen2.5-1.5b-instruct",
+      "full_memo": "### 1. Executive Thesis\n- **Conviction Rating:** High Conviction Bearish\n- **Statistical Edge:** The ML Model C has a 11.4% probability of predicting a 3-day abnormal return for Infosys (INFY) above +0.5% compared to the NIFTY 50 index. This indicates a strong bearish outlook given the historical win rate of 45.0% across 20 historical analogs.\n- **Core Thesis:** The negative sentiment expressed by FinBERT, coupled with the recent decline in Infosys’s share price amidst broader IT sector challenges, suggests a high conviction bearish stance on the company.\n\n### 2. Technical & Event Catalysts\n- **Event Type:** Monetary Policy\n- **Sentiment Breakdown:** FinBERT sentiment is predominantly negative, indicating investor concern about the impact of monetary policy changes on Infosys’s financial performance.\n- **Technical Baseline:** \n  - **5-Day Momentum:** -2.55%, suggesting continued downward pressure.\n  - **20-Day Momentum:** -13.22%, further confirming the downtrend.\n  - **20-Day Volatility:** 1.71%, moderate but still indicative of risk.\n  - **Volume Anomaly Ratio:** 1.00x, normal range, indicating consistent trading activity without significant anomalies.\n  - **NIFTY 50 5-Day Return:** -2.35%, contributing to overall market conditions.\n\n### 3. Historical Analog Precedents\n- **Empirical Base Rate:** Across 20 historical analogs, the average 3-day abnormal return (AR3) for Infosys was -0.19%, with a median value of -0.19%. The maximum gain observed was +0.64%, while the maximum loss was -2.52%.\n- **Case Studies:** \n  - **[202",
+      "sections": {
+        "executive_thesis": "- **Conviction Rating:** High Conviction Bearish\n- **Statistical Edge:** The ML Model C has a 11.4% probability of predicting a 3-day abnormal return for Infosys (INFY) above +0.5% compared to the NIFTY 50 index. This indicates a strong bearish outlook given the historical win rate of 45.0% across 20 historical analogs.\n- **Core Thesis:** The negative sentiment expressed by FinBERT, coupled with the recent decline in Infosys’s share price amidst broader IT sector challenges, suggests a high conviction bearish stance on the company.",
+        "technical_event_drivers": "- **Event Type:** Monetary Policy\n- **Sentiment Breakdown:** FinBERT sentiment is predominantly negative, indicating investor concern about the impact of monetary policy changes on Infosys’s financial performance.\n- **Technical Baseline:** \n  - **5-Day Momentum:** -2.55%, suggesting continued downward pressure.\n  - **20-Day Momentum:** -13.22%, further confirming the downtrend.\n  - **20-Day Volatility:** 1.71%, moderate but still indicative of risk.\n  - **Volume Anomaly Ratio:** 1.00x, normal range, indicating consistent trading activity without significant anomalies.\n  - **NIFTY 50 5-Day Return:** -2.35%, contributing to overall market conditions.",
+        "historical_precedent": "- **Empirical Base Rate:** Across 20 historical analogs, the average 3-day abnormal return (AR3) for Infosys was -0.19%, with a median value of -0.19%. The maximum gain observed was +0.64%, while the maximum loss was -2.52%.\n- **Case Studies:** \n  - **[202",
+        "downside_risks": ""
+      }
+    }
+  }
+}
