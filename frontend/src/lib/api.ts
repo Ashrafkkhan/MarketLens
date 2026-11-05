@@ -13,7 +13,8 @@ import {
   PriceForecastResponse,
 } from '@/types/marketlens';
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+// Backend base URL, inlined at build time from NEXT_PUBLIC_API_URL (set in Vercel).
+const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1').replace(/\/+$/, '');
 
 // ---------------------------------------------------------------------------
 // Realistic Mock Fallback Data (Dev / Offline Mode)
